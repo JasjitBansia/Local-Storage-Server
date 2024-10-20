@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Local Storage Server</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+      }
+
+      form {
+        background-color: #f0f0f0;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      input[type="file"] {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+      }
+
+      button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0069d9;
+      }
+
+      #progress {
+        font-size: 18px;
+        margin-top: 10px;
+      }
+
+      #fileList {
+        list-style-type: none;
+        padding: 0;
+        margin: 20px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #fileList h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      #fileList li {
+        width: 80%;
+        padding: 20px;
+        background-color: #f0f0f0;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 30px;
+      }
+
+      #fileList li .delete-button {
+        cursor: pointer;
+        color: red;
+        font-size: 20px;
+        margin-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input
+        type="file"
+        name="uploadedFile"
+        onchange="fileInfo()"
+        id="input"
+        multiple
+      />
+      <button id="submit" onclick="uploadProgress()">Upload</button>
+      <p id="progress">0.00%</p>
+      <h2>FILES</h2>
+      <ul id="fileList"></ul>
+    </form>
+  </body>
+  <script>
+    let url;
+    async function getFileList() {
+      let req = await fetch("/getFileList");
+      let json = await req.json();
+      let fileList = json.fileList;
+      document.getElementsByTagName(
+        "h2"
+      )[0].innerText = `FILES (${json.dirSize})`;
+      let ul = document.getElementById("fileList");
+      fileList.forEach((e) => {
+        let li = document.createElement("li");
+        let label = document.createElement("label");
+        label.classList.add("delete-button");
+        li.innerText = e.name + "      " + (e.size / 1000000).toFixed(0) + "MB";
+        label.innerText = "Delete";
+        li.appendChild(label);
+        ul.appendChild(li);
+        label.addEventListener("click", async () => {
+          let req = await fetch(`/delete/${e.name}`, {
+            method: "DELETE",
+          });
+          let json = await req.json();
+          if (json.content === "Deleted") {
+            document.getElementById("fileList").innerHTML = " ";
+            getFileList();
+          }
+        });
+      });
+    }
+    getFileList();
+
+    const uploadForm = document.getElementById("uploadForm");
+    const input = document.getElementById("input");
+    const submitButton = document.getElementById("submit");
+    uploadForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      let formData = new FormData(uploadForm);
+      let req = await fetch("/upload", {
+        method: "POST",
+        body: formData,
+      });
+      let json = await req.json();
+      url = json.url;
+    });
+
+    function fileInfo() {
+      let file = input.files[0];
+      fetch(`/baseFileInfo`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          size: file.size,
+          name: file.name,
+        }),
+      });
+    }
+    function uploadProgress() {
+      let progressElement = document.getElementById("progress");
+      progressElement.style.cursor = "pointer";
+      progressElement.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(url);
+        alert("URL copied");
+      });
+      interval = setInterval(async () => {
+        let req = await fetch("/uploadProgress");
+        let json = await req.json();
+        progressElement.innerText = json.uploadPercentage + "%";
+        if (json.uploadPercentage == 100) {
+          clearInterval(interval);
+          progressElement.innerText = url;
+          document.getElementById("fileList").innerHTML = " ";
+          getFileList();
+        }
+      }, 1000);
+    }
+  </script>
+</html>
