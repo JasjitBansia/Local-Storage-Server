@@ -103,7 +103,12 @@
         let li = document.createElement("li");
         let label = document.createElement("label");
         label.classList.add("delete-button");
-        li.innerText = e.name + "      " + (e.size / 1000000).toFixed(0) + "MB";
+        li.innerText =
+          "http://jasjitbansia.ddns.net:5050/files/" +
+          e.name +
+          "      " +
+          (e.size / 1000000).toFixed(0) +
+          "MB";
         label.innerText = "Delete";
         li.appendChild(label);
         ul.appendChild(li);

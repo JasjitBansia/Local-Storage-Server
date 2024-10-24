@@ -7,7 +7,11 @@ const path = require("path");
 const fs = require("fs");
 let baseFileSize;
 let baseFileName;
-let date = Date.now();
+let date;
+function returnDate() {
+  date = Date.now();
+  return date;
+}
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     return cb(
@@ -16,7 +20,7 @@ const storage = multer.diskStorage({
     );
   },
   filename: function (req, file, cb) {
-    cb(null, `${date}-${file.originalname}`);
+    cb(null, `${returnDate()}-${file.originalname}`);
   },
 });
 const multerObj = multer({ storage });
@@ -49,7 +53,7 @@ app.get("/getFileList", (req, res) => {
 });
 app.post("/upload", multerObj.single("uploadedFile"), async (req, res) => {
   return res.send({
-    url: `http://jasjitbansia.ddns.net:5050/files/${date}-${baseFileName}`,
+    url: `http://jasjitbansia.ddns.net:5050/files/${req.file.filename}`,
   });
 });
 app.post("/baseFileInfo", express.json(), (req, res) => {
