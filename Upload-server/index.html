@@ -1,99 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="icon"
-      type="image/png"
-      href="https://i.ibb.co/94WLWbm/storage.png"
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/94WLWbm/storage.png">
     <title>Local Storage Server</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        padding: 20px;
-      }
+        body {
+            font-family: Arial, sans-serif;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            background-color: #000; /* Darkest background */
+        }
 
-      form {
-        background-color: #f0f0f0;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      }
+        form {
+            background-color: #111; /* Darker form background */
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7); /* Stronger shadow */
+        }
 
-      input[type="file"] {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 3px;
-      }
+        input[type="file"] {
+            padding: 10px;
+            border: 1px solid #333; /* Darker border */
+            border-radius: 3px;
+            background-color: #111; /* Match form background */
+            color: #ccc; /* Lighter text color */
+        }
 
-      button {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 3px;
-        cursor: pointer;
-      }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff; /* Keep button blue */
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
 
-      button:hover {
-        background-color: #0069d9;
-      }
+        button:hover {
+            background-color: #0069d9;
+        }
 
-      #progress {
-        font-size: 18px;
-        margin-top: 10px;
-      }
+        #progress {
+            font-size: 18px;
+            margin-top: 10px;
+            color: #ccc; /* Lighter progress text for visibility */
+        }
 
-      #fileList {
-        list-style-type: none;
-        padding: 0;
-        margin: 20px 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
+        #fileList {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-      #fileList h2 {
-        font-size: 24px;
-        margin-bottom: 20px;
-      }
+        #fileList h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #ccc; /* Lighter header text for visibility */
+        }
 
-      #fileList li {
-        width: 80%;
-        padding: 20px;
-        background-color: #f0f0f0;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        text-align: center;
-        font-size: 30px;
-      }
+        #fileList li {
+            width: 80%;
+            padding: 20px;
+            background-color: #111; /* Darker list item background */
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 30px;
+            color: #ccc; /* Lighter text color for list items */
+        }
 
-      #fileList li .delete-button {
-        cursor: pointer;
-        color: red;
-        font-size: 20px;
-        margin-left: 10px;
-      }
+        #fileList li .delete-button {
+            cursor: pointer;
+            color: #f00; /* Red for delete button */
+            font-size: 20px;
+            margin-left: 10px;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <form id="uploadForm" enctype="multipart/form-data">
-      <input
-        type="file"
-        name="uploadedFile"
-        onchange="fileInfo()"
-        id="input"
-        multiple
-      />
-      <button id="submit" onclick="uploadProgress()">Upload</button>
-      <p id="progress">0.00%</p>
-      <h2>FILES</h2>
-      <ul id="fileList"></ul>
+        <input type="file" name="uploadedFile" onchange="fileInfo()" id="input" multiple>
+        <button id="submit" onclick="uploadProgress()">Upload</button>
+        <p id="progress">0.00%</p>
+        <h2>FILES</h2>
+        <ul id="fileList"></ul>
     </form>
-  </body>
+</body>
+</html>
   <script>
     let url;
     async function getFileList() {
